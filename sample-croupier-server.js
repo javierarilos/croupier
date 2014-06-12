@@ -1,3 +1,4 @@
+"use strict";
 var http = require('http');
 var croupierProvider = require('./croupier-provider');
 
@@ -7,13 +8,14 @@ if(process.argv[2] === '-h'){
   console.log('Usage: node client.js [host] [port]');
   console.log('host : Server to use, mandatory.');
   console.log('port : Port to use, mandatory.');
+  process.exit(0);
 }
 
 var host = process.argv[2];
 var port = process.argv[3];
 
 if(! host || ! port){
-  console.log("]]]]]]]]] host or port are mandatory.");
+  console.error("host and port are mandatory.");
   process.exit(0);
 }
 

@@ -1,3 +1,4 @@
+"use strict";
 // Croupier.JS: an HTTP Brokerless Bus
 // Croupier is a small daemon (or client library, TBD) that easily adds fault-tolerance, horizontal scalability to your current HTTP backend-to-backend interactions.
 //
@@ -12,7 +13,8 @@
 
 var http = require('http'),
     httpProxy = require('http-proxy'),
-    dgram = require('dgram');
+    dgram = require('dgram'),
+    debug = require('debug')('croupier');
 
 // Croupier Usage
 // --------------
@@ -20,7 +22,7 @@ var http = require('http'),
 // __host__ : Server to use, 0.0.0.0 by default.  
 // __port__ : Port to use for HTTP requests, 8000 by default.  
 // 
-if(process.argv[2] === '-h'){
+if (process.argv[2] === '-h'){
   console.log('Usage: node croupier.js [host] [port]');
   console.log('host : Server to use, 0.0.0.0 by default.');
   console.log('port : Port to use for HTTP requests, 8000 by default.');
@@ -39,20 +41,20 @@ var port = process.argv[3] || '8000';
 var croupierSocket = dgram.createSocket("udp4");
 
 function _croupierOnMessage(msg, rinfo) {
-  console.log("croupierSocket got: " + msg + " from " + rinfo.address + ":" + rinfo.port);
+  debug("croupierSocket got: " + msg + " from " + rinfo.address + ":" + rinfo.port);
   msg = JSON.parse(msg);
-  if('producerStatus' === msg.type){
-    if(servers[msg.topic] === undefined){
+  if ('producerStatus' === msg.type){
+    if (servers[msg.topic] === undefined){
       servers[msg.topic] = {};
     }
     servers[msg.topic][msg.host+':'+msg.port] = msg;
-    console.log('Received new servers update : ', msg);
+    debug('Received new servers update : ', msg);
   }
 }
 
 function _croupierOnListening () {
  var address = croupierSocket.address();
- console.log("croupierSocket listening " + address.address + ":" + address.port);
+ debug("croupierSocket listening " + address.address + ":" + address.port);
 }
 
 croupierSocket.on("message", _croupierOnMessage)
@@ -71,19 +73,18 @@ function _getAddress(topic){
   var res;
   var address = null;
   var count = 0;
-  if(servers[topic]){
+  if (servers[topic]){
     for (var server_info in servers[topic])
         if (Math.random() < 1/++count){
            res = servers[topic][server_info];
        }
-    if(res && res.host && res.port){
+    if (res && res.host && res.port){
       address = {host: res.host, port: res.port};
     } else {
-      console.log("}} res: ", res);
-      console.log('}} WARN bad server... returning default', address)
+      console.log('>> bad server... returning default', address)
     }
   } else {
-    console.warn("Not found servers for topic: ", topic);
+    console.log(">> Not found servers for topic: ", topic);
   }
   return address;
 }
@@ -111,15 +112,15 @@ function _returnHTTPError(res, code, reason){
 }
 
 function _processHTTPRequest(req, res) {
-  topic = req.headers['croupier-topic'];
-  if(topic){
-    address = _getAddress(topic);
-    if(address !== null){
+  var topic = req.headers['croupier-topic'];
+  if (topic){
+    var address = _getAddress(topic);
+    if (address !== null){
       console.log("* received req with topic: ", topic, "==>>", address);
       
       proxy.web(req, res, { target: address},
         function onProxyError(e, req, res){
-          servicePort = address.host+":"+address.port;
+          var servicePort = address.host+":"+address.port;
           delete servers[topic][servicePort];
           console.log("### error", e, " targeting: ", address, " deleted servicePort: ", servicePort, "for topic '", topic, "'from servers.");
           _processHTTPRequest(req, res);

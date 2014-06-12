@@ -1,3 +1,4 @@
+"use strict";
 var http = require('http');
 
 if(process.argv[2] === '-h'){
@@ -18,7 +19,7 @@ method: 'GET',
 headers: {'croupier-topic': 'allocate-vm'}
 };
 
-callback = function(response) {
+var callback = function(response) {
   var str = ''
   response.on('data', function (chunk) {
     str += chunk;

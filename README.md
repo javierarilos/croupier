@@ -27,7 +27,7 @@ npm install
 running the example
 -------------------
 ```bash
-echo to be able to see something in the logs, each server should be run in its own cosole
+echo to be able to see something in the logs, each server should be run in its own console
 
 echo running croupier
 node croupier.js 8000
@@ -41,6 +41,12 @@ node sample-croupier-server.js 10.95.139.221 8009
 
 echo running sample client
 node sample-croupier-client.js localhost 8000
+```
+
+Enabling debug, before running, server and croupier consoles:
+
+```bash
+export DEBUG=croupier,croupier-provider
 ```
 
 Pending work

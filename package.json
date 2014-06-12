@@ -3,7 +3,8 @@
   "description": "Croupier.JS: an HTTP Brokerless Bus",
   "author": "Javier Arias <javier.arilos@gmail.com>",
   "dependencies": {
-    "http-proxy": "1.1.x"
+    "http-proxy": "1.1.x",
+    "debug": "1.0.x"
   },
   "engine": "node >= 0.10.x"
 }
