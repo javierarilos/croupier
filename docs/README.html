@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>croupier</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="README.html">
+                README.md
+              </a>
+            
+              
+              <a class="source" href="croupier.html">
+                croupier.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <h1 id="croupier">croupier</h1>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Croupier.JS: an HTTP Brokerless Bus
+Croupier is a small daemon (or client library, TBD) that easily adds fault-tolerance, horizontal scalability to your current HTTP backend-to-backend interactions.</p>
+<h2 id="when-to-use-croupier">When to use croupier</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Before having croupier, you probably implemented some HTTP based backend to backend interactions. 
+Those are working well, but now you want to be able to add more servers for Fault-Tolerance and Horizontal Scalability.</p>
+<p>You may have though of solutions like HA proxy, but this usually need to be configured, and be restarted when configuration changes (eg. adding a new server).</p>
+<p>Croupier allows you adding new servers that start receiving requests right away. No config, no restarts, just plug and play.</p>
+<h2 id="installing">installing</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>You will need node.js and npm.</p>
+<pre><code class="lang-bash">git clone git@github.com:javierarilos/croupier.git
+<span class="hljs-built_in">cd</span> croupier
+npm install
+</code></pre>
+<h2 id="running-the-example">running the example</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <pre><code class="lang-bash"><span class="hljs-built_in">echo</span> to be able to see something <span class="hljs-keyword">in</span> the logs, each server should be run <span class="hljs-keyword">in</span> its own cosole
+
+<span class="hljs-built_in">echo</span> running croupier
+node croupier.js <span class="hljs-number">8000</span>
+
+<span class="hljs-built_in">echo</span> running the sample servers
+<span class="hljs-built_in">echo</span> server <span class="hljs-keyword">in</span> port <span class="hljs-number">8008</span>
+node sample-croupier-server.js <span class="hljs-number">10.95</span>.<span class="hljs-number">139.221</span> <span class="hljs-number">8008</span>
+
+<span class="hljs-built_in">echo</span> server <span class="hljs-keyword">in</span> port <span class="hljs-number">8009</span>
+node sample-croupier-server.js <span class="hljs-number">10.95</span>.<span class="hljs-number">139.221</span> <span class="hljs-number">8009</span>
+
+<span class="hljs-built_in">echo</span> running sample client
+node sample-croupier-client.js localhost <span class="hljs-number">8000</span>
+</code></pre>
+<h2 id="pending-work">Pending work</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Croupier is still a work in progress.</p>
+<ul>
+<li>Architecture decission: croupier should be a separate daemon process or a client-library wrapping standard http?<br>Features</li>
+<li>Monitoring and administration: monitoring of croupier and providers (requests handled, response times, ongoing requests, …</li>
+<li>HTTP on steroids: handle redeliveries, TTL, Throttling…</li>
+<li>Load balancing: now each request is forwarded to a random server. More intelligent approaches can be followed (eg: number of current requests, response time degraded, …)</li>
+<li>On start, croupier should send a message to discover all providers. Now, this is done by receiving the publisher status sent by providers.</li>
+</ul>
+
+            </div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

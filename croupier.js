@@ -1,14 +1,6 @@
 // Croupier.JS: an HTTP Brokerless Bus
 // Croupier is a small daemon (or client library, TBD) that easily adds fault-tolerance, horizontal scalability to your current HTTP backend-to-backend interactions.
 //
-// When to use croupier
-// --------------------
-// Before having croupier, you probably implemented some HTTP based backend to backend interactions. 
-// Those are working well, but now you want to be able to add more servers for Fault-Tolerance and Horizontal Scalability.
-//
-// You may have though of solutions like HA proxy, but this usually need to be configured, and be restarted when configuration changes (eg. adding a new server).
-// Croupier allows you adding new servers that start receiving requests right away. No config, no restarts, just plug and play.
-//
 // How croupier works
 // ------------------
 // Croupier works with topics. A topic for croupier is just a tag that names the service or type of servers, for example: client-api, logging, ...
@@ -17,17 +9,6 @@
 // A client wants to send an HTTP request to one of the servers; it sends the request to croupier and adds an HTTP-header with the topic: "croupier-topic": "client-api"
 // Croupier delivers the request to one of the servers providing that topic.
 // 
-//
-// Pending work
-// ------------
-// croupier is still a work in progress.
-// * Architecture decission: croupier should be a separate daemon process or a client-library wrapping standard http?
-//
-// Features
-// * Monitoring and administration: monitoring of croupier and providers (requests handled, response times, ongoing requests, ...
-// * HTTP on steroids: handle redeliveries, TTL, Throttling...
-// * Load balancing: now each request is forwarded to a random server. More intelligent approaches can be followed (eg: number of current requests, response time degraded, ...)
-// * On start, croupier should send a message to discover all providers. Now, this is done by receiving the publisher status sent by providers.
 
 var http = require('http'),
     httpProxy = require('http-proxy'),
@@ -110,6 +91,7 @@ function _getAddress(topic){
 // Servers
 // -------
 // servers object stores the servers addresses and status by topic:
+// ```javascript
 //    {
 //      topic1: {
 //          host_a:port1: {topic: topic1, host: host_a, port: port1, requests: number_requests},
@@ -117,7 +99,7 @@ function _getAddress(topic){
 //          (...)},
 //      topic2: {
 //          (...)}
-//    }
+//    }```
 var servers = {};
 var index = 0;
 

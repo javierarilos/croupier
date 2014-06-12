@@ -4,93 +4,135 @@
 <head>
   <title>croupier.js</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
   <link rel="stylesheet" media="all" href="docco.css" />
 </head>
 <body>
-  <div class="container">
-    <div class="page">
-
-      <div class="header">
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="README.html">
+                README.md
+              </a>
+            
+              
+              <a class="source" href="croupier.html">
+                croupier.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
         
-          <h1>croupier.js</h1>
+          <li id="title">
+              <div class="annotation">
+                  <h1>croupier.js</h1>
+              </div>
+          </li>
         
-
         
-      </div>
-
-      
         
-        <p>Croupier.JS: an HTTP Brokerless Bus
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>Croupier.JS: an HTTP Brokerless Bus
 Croupier is a small daemon (or client library, TBD) that easily adds fault-tolerance, horizontal scalability to your current HTTP backend-to-backend interactions.</p>
-<h2 id="when-to-use-croupier">When to use croupier</h2>
-
-        
-      
-        
-        <p>Before having croupier, you probably implemented some HTTP based backend to backend interactions. 
-Those are working well, but now you want to be able to add more servers for Fault-Tolerance and Horizontal Scalability.</p>
-<p>You may have though of solutions like HA proxy, but this usually need to be configured, and be restarted when configuration changes (eg. adding a new server).
-Croupier allows you adding new servers that start receiving requests right away. No config, no restarts, just plug and play.</p>
 <h2 id="how-croupier-works">How croupier works</h2>
 
+            </div>
+            
+        </li>
         
-      
         
-        <p>Croupier works with topics. A topic for croupier is just a tag that names the service or type of servers, for example: client-api, logging, …
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Croupier works with topics. A topic for croupier is just a tag that names the service or type of servers, for example: client-api, logging, …
 When a server starts, it uses croupier-provider module to register itself as a provider of a topic on a host and a port.
 Croupier receives the notification of the provider and keeps a registry of servers per topic.
 A client wants to send an HTTP request to one of the servers; it sends the request to croupier and adds an HTTP-header with the topic: “croupier-topic”: “client-api”
 Croupier delivers the request to one of the servers providing that topic.</p>
-<h2 id="pending-work">Pending work</h2>
 
-        
-      
-        
-        <p>croupier is still a work in progress.</p>
-<ul>
-<li>Architecture decission: croupier should be a separate daemon process or a client-library wrapping standard http?</li>
-</ul>
-<p>Features</p>
-<ul>
-<li>Monitoring and administration: monitoring of croupier and providers (requests handled, response times, ongoing requests, …</li>
-<li>HTTP on steroids: handle redeliveries, TTL, Throttling…</li>
-<li>Load balancing: now each request is forwarded to a random server. More intelligent approaches can be followed (eg: number of current requests, response time degraded, …)</li>
-<li>On start, croupier should send a message to discover all providers. Now, this is done by receiving the publisher status sent by providers.</li>
-</ul>
-
-        
-          <div class='highlight'><pre>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
 <span class="hljs-keyword">var</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http'</span>),
     httpProxy = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http-proxy'</span>),
-    dgram = <span class="hljs-built_in">require</span>(<span class="hljs-string">'dgram'</span>);</pre></div>
+    dgram = <span class="hljs-built_in">require</span>(<span class="hljs-string">'dgram'</span>);</pre></div></div>
+            
+        </li>
         
-      
         
-        <h2 id="croupier-usage">Croupier Usage</h2>
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <h2 id="croupier-usage">Croupier Usage</h2>
 
+            </div>
+            
+        </li>
         
-      
         
-        <p><strong>node croupier.js [host] [port]</strong><br><strong>host</strong> : Server to use, 0.0.0.0 by default.<br><strong>port</strong> : Port to use for HTTP requests, 8000 by default.  </p>
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p><strong>node croupier.js [host] [port]</strong><br><strong>host</strong> : Server to use, 0.0.0.0 by default.<br><strong>port</strong> : Port to use for HTTP requests, 8000 by default.  </p>
 
-        
-          <div class='highlight'><pre><span class="hljs-keyword">if</span>(process.argv[<span class="hljs-number">2</span>] === <span class="hljs-string">'-h'</span>){
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">if</span>(process.argv[<span class="hljs-number">2</span>] === <span class="hljs-string">'-h'</span>){
   console.log(<span class="hljs-string">'Usage: node croupier.js [host] [port]'</span>);
   console.log(<span class="hljs-string">'host : Server to use, 0.0.0.0 by default.'</span>);
   console.log(<span class="hljs-string">'port : Port to use for HTTP requests, 8000 by default.'</span>);
 }
 <span class="hljs-keyword">var</span> host = process.argv[<span class="hljs-number">2</span>] || <span class="hljs-string">'0.0.0.0'</span>;
-<span class="hljs-keyword">var</span> port = process.argv[<span class="hljs-number">3</span>] || <span class="hljs-string">'8000'</span>;</pre></div>
+<span class="hljs-keyword">var</span> port = process.argv[<span class="hljs-number">3</span>] || <span class="hljs-string">'8000'</span>;</pre></div></div>
+            
+        </li>
         
-      
         
-        <h2 id="discovery">Discovery</h2>
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <h2 id="discovery">Discovery</h2>
 
+            </div>
+            
+        </li>
         
-      
         
-        <p>Croupier enabled HTTP servers send status updates so that croupier can register them.
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Croupier enabled HTTP servers send status updates so that croupier can register them.
 Status updates are received via UDP-multicast: port 3000 multicast address: 224.0.0.14. This allows very little network overhead and easy discovery.
 Since croupier is meant to backend-to-backend escenarios there should not be problems on communications infrastructure due to using UDP.
 Producer status updates include the topic, host, port and the number of requests served.</p>
@@ -99,8 +141,9 @@ Producer status updates include the topic, host, port and the number of requests
 <li>periodically: producer publishes its status for auto-discovery and accounting.</li>
 </ul>
 
-        
-          <div class='highlight'><pre><span class="hljs-keyword">var</span> croupierSocket = dgram.createSocket(<span class="hljs-string">"udp4"</span>);
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> croupierSocket = dgram.createSocket(<span class="hljs-string">"udp4"</span>);
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_croupierOnMessage</span><span class="hljs-params">(msg, rinfo)</span> {</span>
   console.log(<span class="hljs-string">"croupierSocket got: "</span> + msg + <span class="hljs-string">" from "</span> + rinfo.address + <span class="hljs-string">":"</span> + rinfo.port);
@@ -124,20 +167,36 @@ croupierSocket.on(<span class="hljs-string">"message"</span>, _croupierOnMessage
 
 croupierSocket.bind(<span class="hljs-number">3000</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
   croupierSocket.addMembership(<span class="hljs-string">'224.0.0.14'</span>);
-});</pre></div>
+});</pre></div></div>
+            
+        </li>
         
-      
         
-        <h2 id="_getaddress-topic-function">_getAddress(topic) function</h2>
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <h2 id="_getaddress-topic-function">_getAddress(topic) function</h2>
 
+            </div>
+            
+        </li>
         
-      
         
-        <p>Pick a random server for the topic and returns an address object:
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Pick a random server for the topic and returns an address object:
     {host: host, port: port}</p>
 
-        
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_getAddress</span><span class="hljs-params">(topic)</span>{</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_getAddress</span><span class="hljs-params">(topic)</span>{</span>
   
   <span class="hljs-keyword">var</span> res;
   <span class="hljs-keyword">var</span> address = <span class="hljs-literal">null</span>;
@@ -157,27 +216,44 @@ croupierSocket.bind(<span class="hljs-number">3000</span>, <span class="hljs-fun
     console.warn(<span class="hljs-string">"Not found servers for topic: "</span>, topic);
   }
   <span class="hljs-keyword">return</span> address;
-}</pre></div>
+}</pre></div></div>
+            
+        </li>
         
-      
         
-        <h2 id="servers">Servers</h2>
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <h2 id="servers">Servers</h2>
 
+            </div>
+            
+        </li>
         
-      
         
-        <p>servers object stores the servers addresses and status by topic:
-   {
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>servers object stores the servers addresses and status by topic:</p>
+<pre><code class="lang-javascript">   {
      topic1: {
          host_a:port1: {topic: topic1, host: host_a, port: port1, requests: number_requests},
          host_b:port2: {topic: topic1, host: host_b, port: port2, requests: number_requests},
-         (…)},
+         (...)},
      topic2: {
-         (…)}
-   }</p>
+         (...)}
+   }
+</code></pre>
 
-        
-          <div class='highlight'><pre><span class="hljs-keyword">var</span> servers = {};
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> servers = {};
 <span class="hljs-keyword">var</span> index = <span class="hljs-number">0</span>;
 
 <span class="hljs-keyword">var</span> proxy = httpProxy.createProxyServer({});
@@ -211,11 +287,11 @@ croupierSocket.bind(<span class="hljs-number">3000</span>, <span class="hljs-fun
 
 <span class="hljs-keyword">var</span> httpServer = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http'</span>).createServer(_processHTTPRequest);
 httpServer.listen(<span class="hljs-number">8000</span>);
-console.log(<span class="hljs-string">"listening on port 8000"</span>);</pre></div>
+console.log(<span class="hljs-string">"listening on port 8000"</span>);</pre></div></div>
+            
+        </li>
         
-      
-      <div class="fleur">h</div>
-    </div>
+    </ul>
   </div>
 </body>
 </html>
