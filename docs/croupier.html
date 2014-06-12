@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>croupier.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          <h1>croupier.js</h1>
+        
+
+        
+      </div>
+
+      
+        
+        <p>Croupier.JS: an HTTP Brokerless Bus
+Croupier is a small daemon (or client library, TBD) that easily adds fault-tolerance, horizontal scalability to your current HTTP backend-to-backend interactions.</p>
+<h2 id="when-to-use-croupier">When to use croupier</h2>
+
+        
+      
+        
+        <p>Before having croupier, you probably implemented some HTTP based backend to backend interactions. 
+Those are working well, but now you want to be able to add more servers for Fault-Tolerance and Horizontal Scalability.</p>
+<p>You may have though of solutions like HA proxy, but this usually need to be configured, and be restarted when configuration changes (eg. adding a new server).
+Croupier allows you adding new servers that start receiving requests right away. No config, no restarts, just plug and play.</p>
+<h2 id="how-croupier-works">How croupier works</h2>
+
+        
+      
+        
+        <p>Croupier works with topics. A topic for croupier is just a tag that names the service or type of servers, for example: client-api, logging, …
+When a server starts, it uses croupier-provider module to register itself as a provider of a topic on a host and a port.
+Croupier receives the notification of the provider and keeps a registry of servers per topic.
+A client wants to send an HTTP request to one of the servers; it sends the request to croupier and adds an HTTP-header with the topic: “croupier-topic”: “client-api”
+Croupier delivers the request to one of the servers providing that topic.</p>
+<h2 id="pending-work">Pending work</h2>
+
+        
+      
+        
+        <p>croupier is still a work in progress.</p>
+<ul>
+<li>Architecture decission: croupier should be a separate daemon process or a client-library wrapping standard http?</li>
+</ul>
+<p>Features</p>
+<ul>
+<li>Monitoring and administration: monitoring of croupier and providers (requests handled, response times, ongoing requests, …</li>
+<li>HTTP on steroids: handle redeliveries, TTL, Throttling…</li>
+<li>Load balancing: now each request is forwarded to a random server. More intelligent approaches can be followed (eg: number of current requests, response time degraded, …)</li>
+<li>On start, croupier should send a message to discover all providers. Now, this is done by receiving the publisher status sent by providers.</li>
+</ul>
+
+        
+          <div class='highlight'><pre>
+<span class="hljs-keyword">var</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http'</span>),
+    httpProxy = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http-proxy'</span>),
+    dgram = <span class="hljs-built_in">require</span>(<span class="hljs-string">'dgram'</span>);</pre></div>
+        
+      
+        
+        <h2 id="croupier-usage">Croupier Usage</h2>
+
+        
+      
+        
+        <p><strong>node croupier.js [host] [port]</strong><br><strong>host</strong> : Server to use, 0.0.0.0 by default.<br><strong>port</strong> : Port to use for HTTP requests, 8000 by default.  </p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">if</span>(process.argv[<span class="hljs-number">2</span>] === <span class="hljs-string">'-h'</span>){
+  console.log(<span class="hljs-string">'Usage: node croupier.js [host] [port]'</span>);
+  console.log(<span class="hljs-string">'host : Server to use, 0.0.0.0 by default.'</span>);
+  console.log(<span class="hljs-string">'port : Port to use for HTTP requests, 8000 by default.'</span>);
+}
+<span class="hljs-keyword">var</span> host = process.argv[<span class="hljs-number">2</span>] || <span class="hljs-string">'0.0.0.0'</span>;
+<span class="hljs-keyword">var</span> port = process.argv[<span class="hljs-number">3</span>] || <span class="hljs-string">'8000'</span>;</pre></div>
+        
+      
+        
+        <h2 id="discovery">Discovery</h2>
+
+        
+      
+        
+        <p>Croupier enabled HTTP servers send status updates so that croupier can register them.
+Status updates are received via UDP-multicast: port 3000 multicast address: 224.0.0.14. This allows very little network overhead and easy discovery.
+Since croupier is meant to backend-to-backend escenarios there should not be problems on communications infrastructure due to using UDP.
+Producer status updates include the topic, host, port and the number of requests served.</p>
+<ul>
+<li>on start: producer publishes what topics it is serving: topic, host and port</li>
+<li>periodically: producer publishes its status for auto-discovery and accounting.</li>
+</ul>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> croupierSocket = dgram.createSocket(<span class="hljs-string">"udp4"</span>);
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_croupierOnMessage</span><span class="hljs-params">(msg, rinfo)</span> {</span>
+  console.log(<span class="hljs-string">"croupierSocket got: "</span> + msg + <span class="hljs-string">" from "</span> + rinfo.address + <span class="hljs-string">":"</span> + rinfo.port);
+  msg = <span class="hljs-built_in">JSON</span>.parse(msg);
+  <span class="hljs-keyword">if</span>(<span class="hljs-string">'producerStatus'</span> === msg.type){
+    <span class="hljs-keyword">if</span>(servers[msg.topic] === <span class="hljs-literal">undefined</span>){
+      servers[msg.topic] = {};
+    }
+    servers[msg.topic][msg.host+<span class="hljs-string">':'</span>+msg.port] = msg;
+    console.log(<span class="hljs-string">'Received new servers update : '</span>, msg);
+  }
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_croupierOnListening</span> <span class="hljs-params">()</span> {</span>
+ <span class="hljs-keyword">var</span> address = croupierSocket.address();
+ console.log(<span class="hljs-string">"croupierSocket listening "</span> + address.address + <span class="hljs-string">":"</span> + address.port);
+}
+
+croupierSocket.on(<span class="hljs-string">"message"</span>, _croupierOnMessage)
+              .on(<span class="hljs-string">"listening"</span>, _croupierOnListening);
+
+croupierSocket.bind(<span class="hljs-number">3000</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+  croupierSocket.addMembership(<span class="hljs-string">'224.0.0.14'</span>);
+});</pre></div>
+        
+      
+        
+        <h2 id="_getaddress-topic-function">_getAddress(topic) function</h2>
+
+        
+      
+        
+        <p>Pick a random server for the topic and returns an address object:
+    {host: host, port: port}</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_getAddress</span><span class="hljs-params">(topic)</span>{</span>
+  
+  <span class="hljs-keyword">var</span> res;
+  <span class="hljs-keyword">var</span> address = <span class="hljs-literal">null</span>;
+  <span class="hljs-keyword">var</span> count = <span class="hljs-number">0</span>;
+  <span class="hljs-keyword">if</span>(servers[topic]){
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> server_info <span class="hljs-keyword">in</span> servers[topic])
+        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">Math</span>.random() &lt; <span class="hljs-number">1</span>/++count){
+           res = servers[topic][server_info];
+       }
+    <span class="hljs-keyword">if</span>(res &amp;&amp; res.host &amp;&amp; res.port){
+      address = {host: res.host, port: res.port};
+    } <span class="hljs-keyword">else</span> {
+      console.log(<span class="hljs-string">"}} res: "</span>, res);
+      console.log(<span class="hljs-string">'}} WARN bad server... returning default'</span>, address)
+    }
+  } <span class="hljs-keyword">else</span> {
+    console.warn(<span class="hljs-string">"Not found servers for topic: "</span>, topic);
+  }
+  <span class="hljs-keyword">return</span> address;
+}</pre></div>
+        
+      
+        
+        <h2 id="servers">Servers</h2>
+
+        
+      
+        
+        <p>servers object stores the servers addresses and status by topic:
+   {
+     topic1: {
+         host_a:port1: {topic: topic1, host: host_a, port: port1, requests: number_requests},
+         host_b:port2: {topic: topic1, host: host_b, port: port2, requests: number_requests},
+         (…)},
+     topic2: {
+         (…)}
+   }</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> servers = {};
+<span class="hljs-keyword">var</span> index = <span class="hljs-number">0</span>;
+
+<span class="hljs-keyword">var</span> proxy = httpProxy.createProxyServer({});
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_returnHTTPError</span><span class="hljs-params">(res, code, reason)</span>{</span>
+  res.writeHead(<span class="hljs-number">503</span>, reason, {<span class="hljs-string">'Content-Type'</span>: <span class="hljs-string">'application/json'</span>});
+  res.end(<span class="hljs-string">'{"result": "error", "status": '</span>+code+<span class="hljs-string">', "reason": "'</span>+reason+<span class="hljs-string">'"}'</span>);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_processHTTPRequest</span><span class="hljs-params">(req, res)</span> {</span>
+  topic = req.headers[<span class="hljs-string">'croupier-topic'</span>];
+  <span class="hljs-keyword">if</span>(topic){
+    address = _getAddress(topic);
+    <span class="hljs-keyword">if</span>(address !== <span class="hljs-literal">null</span>){
+      console.log(<span class="hljs-string">"* received req with topic: "</span>, topic, <span class="hljs-string">"==&gt;&gt;"</span>, address);
+      
+      proxy.web(req, res, { target: address},
+        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">onProxyError</span><span class="hljs-params">(e, req, res)</span>{</span>
+          servicePort = address.host+<span class="hljs-string">":"</span>+address.port;
+          <span class="hljs-keyword">delete</span> servers[topic][servicePort];
+          console.log(<span class="hljs-string">"### error"</span>, e, <span class="hljs-string">" targeting: "</span>, address, <span class="hljs-string">" deleted servicePort: "</span>, servicePort, <span class="hljs-string">"for topic '"</span>, topic, <span class="hljs-string">"'from servers."</span>);
+          _processHTTPRequest(req, res);
+        });
+    } <span class="hljs-keyword">else</span>{<span class="hljs-comment">//No server available for the topic</span>
+      _returnHTTPError(res, <span class="hljs-number">503</span>, <span class="hljs-string">'croupier-topic: "'</span>+ topic +<span class="hljs-string">'" has no servers available.'</span>);
+    }
+  } <span class="hljs-keyword">else</span> {
+    _returnHTTPError(res, <span class="hljs-number">400</span>, <span class="hljs-string">'croupier-topic header is not present.'</span>);
+  }
+}
+
+<span class="hljs-keyword">var</span> httpServer = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http'</span>).createServer(_processHTTPRequest);
+httpServer.listen(<span class="hljs-number">8000</span>);
+console.log(<span class="hljs-string">"listening on port 8000"</span>);</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "croupier",
+  "description": "Croupier.JS: an HTTP Brokerless Bus",
+  "author": "Javier Arias <javier.arilos@gmail.com>",
+  "dependencies": {
+    "http-proxy": "1.1.x"
+  },
+  "engine": "node >= 0.10.x"
+}
