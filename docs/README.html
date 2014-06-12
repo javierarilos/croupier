@@ -92,7 +92,7 @@ Those are working well, but now you want to be able to add more servers for Faul
 <span class="hljs-built_in">cd</span> croupier
 npm install
 </code></pre>
-<h2 id="running-the-example">running the example</h2>
+<h2 id="how-to-use">how to use</h2>
 
             </div>
             
@@ -105,7 +105,39 @@ npm install
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <pre><code class="lang-bash"><span class="hljs-built_in">echo</span> to be able to see something <span class="hljs-keyword">in</span> the logs, each server should be run <span class="hljs-keyword">in</span> its own cosole
+              <p>Check sample files for a server and client code.</p>
+<p><strong>Server side</strong> just include croupier-provider, start the croupier provider, and close it when done.</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> croupierProvider = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./croupier-provider'</span>);
+<span class="hljs-keyword">var</span> croupier = croupierProvider.startCroupier(topic, host, port);
+(...)
+croupier.finishedRequest(); <span class="hljs-comment">//when handling requests, we can call finishedRequest so that croupier accounts how many requests we handled.</span>
+(...)
+croupier.close(); <span class="hljs-comment">// close when done serving HTTP.</span>
+</code></pre>
+<p><strong>Client side</strong> just add croupier-topic to your HTTP request headers.</p>
+<pre><code class="lang-javascript">{
+method: <span class="hljs-string">'GET'</span>,
+path: <span class="hljs-string">'myrequest/path'</span>,
+headers: {<span class="hljs-string">'croupier-topic'</span>: <span class="hljs-string">'allocate-vm'</span>},
+host: <span class="hljs-string">'croupier-host'</span>,
+port: <span class="hljs-number">8000</span>
+}
+</code></pre>
+<p>Run croupier daemon so that requests go from your client(s) to your server(s). See below how to run it.</p>
+<h2 id="running-the-example">running the example</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <pre><code class="lang-bash"><span class="hljs-built_in">echo</span> to be able to see something <span class="hljs-keyword">in</span> the logs, each server should be run <span class="hljs-keyword">in</span> its own console
 
 <span class="hljs-built_in">echo</span> running croupier
 node croupier.js <span class="hljs-number">8000</span>
@@ -120,6 +152,9 @@ node sample-croupier-server.js <span class="hljs-number">10.95</span>.<span clas
 <span class="hljs-built_in">echo</span> running sample client
 node sample-croupier-client.js localhost <span class="hljs-number">8000</span>
 </code></pre>
+<p>Enabling debug, before running, server and croupier consoles:</p>
+<pre><code class="lang-bash"><span class="hljs-keyword">export</span> DEBUG=croupier,croupier-provider
+</code></pre>
 <h2 id="pending-work">Pending work</h2>
 
             </div>
@@ -127,11 +162,11 @@ node sample-croupier-client.js localhost <span class="hljs-number">8000</span>
         </li>
         
         
-        <li id="section-6">
+        <li id="section-7">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-6">&#182;</a>
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <p>Croupier is still a work in progress.</p>
 <ul>

@@ -48,11 +48,10 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <p>Croupier.JS: an HTTP Brokerless Bus
-Croupier is a small daemon (or client library, TBD) that easily adds fault-tolerance, horizontal scalability to your current HTTP backend-to-backend interactions.</p>
-<h2 id="how-croupier-works">How croupier works</h2>
-
+              
             </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-pi">"use strict"</span>;</pre></div></div>
             
         </li>
         
@@ -62,6 +61,21 @@ Croupier is a small daemon (or client library, TBD) that easily adds fault-toler
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Croupier.JS: an HTTP Brokerless Bus
+Croupier is a small daemon (or client library, TBD) that easily adds fault-tolerance, horizontal scalability to your current HTTP backend-to-backend interactions.</p>
+<h2 id="how-croupier-works">How croupier works</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
               <p>Croupier works with topics. A topic for croupier is just a tag that names the service or type of servers, for example: client-api, logging, …
 When a server starts, it uses croupier-provider module to register itself as a provider of a topic on a host and a port.
@@ -74,20 +88,8 @@ Croupier delivers the request to one of the servers providing that topic.</p>
             <div class="content"><div class='highlight'><pre>
 <span class="hljs-keyword">var</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http'</span>),
     httpProxy = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http-proxy'</span>),
-    dgram = <span class="hljs-built_in">require</span>(<span class="hljs-string">'dgram'</span>);</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-3">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-3">&#182;</a>
-              </div>
-              <h2 id="croupier-usage">Croupier Usage</h2>
-
-            </div>
+    dgram = <span class="hljs-built_in">require</span>(<span class="hljs-string">'dgram'</span>),
+    debug = <span class="hljs-built_in">require</span>(<span class="hljs-string">'debug'</span>)(<span class="hljs-string">'croupier'</span>);</pre></div></div>
             
         </li>
         
@@ -98,17 +100,9 @@ Croupier delivers the request to one of the servers providing that topic.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p><strong>node croupier.js [host] [port]</strong><br><strong>host</strong> : Server to use, 0.0.0.0 by default.<br><strong>port</strong> : Port to use for HTTP requests, 8000 by default.  </p>
+              <h2 id="croupier-usage">Croupier Usage</h2>
 
             </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">if</span>(process.argv[<span class="hljs-number">2</span>] === <span class="hljs-string">'-h'</span>){
-  console.log(<span class="hljs-string">'Usage: node croupier.js [host] [port]'</span>);
-  console.log(<span class="hljs-string">'host : Server to use, 0.0.0.0 by default.'</span>);
-  console.log(<span class="hljs-string">'port : Port to use for HTTP requests, 8000 by default.'</span>);
-}
-<span class="hljs-keyword">var</span> host = process.argv[<span class="hljs-number">2</span>] || <span class="hljs-string">'0.0.0.0'</span>;
-<span class="hljs-keyword">var</span> port = process.argv[<span class="hljs-number">3</span>] || <span class="hljs-string">'8000'</span>;</pre></div></div>
             
         </li>
         
@@ -119,9 +113,22 @@ Croupier delivers the request to one of the servers providing that topic.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <h2 id="discovery">Discovery</h2>
+              <p><strong>node croupier.js [host] [port]</strong><br><strong>host</strong> : Server to use, 0.0.0.0 by default.<br><strong>port</strong> : Port to use for HTTP requests, 8000 by default.  </p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> host = <span class="hljs-literal">null</span>;
+<span class="hljs-keyword">var</span> port = <span class="hljs-literal">null</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_processArguments</span><span class="hljs-params">(argv)</span>{</span>
+  <span class="hljs-keyword">if</span> (argv[<span class="hljs-number">0</span>] === <span class="hljs-string">'-h'</span>){
+    console.log(<span class="hljs-string">'Usage: node croupier.js [host] [port]'</span>);
+    console.log(<span class="hljs-string">'host : Server to use, 0.0.0.0 by default.'</span>);
+    console.log(<span class="hljs-string">'port : Port to use for HTTP requests, 8000 by default.'</span>);
+  }
+  host = argv[<span class="hljs-number">0</span>] || <span class="hljs-string">'0.0.0.0'</span>;
+  port = argv[<span class="hljs-number">1</span>] || <span class="hljs-string">'8000'</span>;
+}</pre></div></div>
             
         </li>
         
@@ -131,6 +138,19 @@ Croupier delivers the request to one of the servers providing that topic.</p>
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <h2 id="discovery">Discovery</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <p>Croupier enabled HTTP servers send status updates so that croupier can register them.
 Status updates are received via UDP-multicast: port 3000 multicast address: 224.0.0.14. This allows very little network overhead and easy discovery.
@@ -146,41 +166,21 @@ Producer status updates include the topic, host, port and the number of requests
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> croupierSocket = dgram.createSocket(<span class="hljs-string">"udp4"</span>);
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_croupierOnMessage</span><span class="hljs-params">(msg, rinfo)</span> {</span>
-  console.log(<span class="hljs-string">"croupierSocket got: "</span> + msg + <span class="hljs-string">" from "</span> + rinfo.address + <span class="hljs-string">":"</span> + rinfo.port);
+  debug(<span class="hljs-string">"croupierSocket got: "</span> + msg + <span class="hljs-string">" from "</span> + rinfo.address + <span class="hljs-string">":"</span> + rinfo.port);
   msg = <span class="hljs-built_in">JSON</span>.parse(msg);
-  <span class="hljs-keyword">if</span>(<span class="hljs-string">'producerStatus'</span> === msg.type){
-    <span class="hljs-keyword">if</span>(servers[msg.topic] === <span class="hljs-literal">undefined</span>){
+  <span class="hljs-keyword">if</span> (<span class="hljs-string">'producerStatus'</span> === msg.type){
+    <span class="hljs-keyword">if</span> (servers[msg.topic] === <span class="hljs-literal">undefined</span>){
       servers[msg.topic] = {};
     }
     servers[msg.topic][msg.host+<span class="hljs-string">':'</span>+msg.port] = msg;
-    console.log(<span class="hljs-string">'Received new servers update : '</span>, msg);
+    debug(<span class="hljs-string">'Received new servers update : '</span>, msg);
   }
 }
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_croupierOnListening</span> <span class="hljs-params">()</span> {</span>
  <span class="hljs-keyword">var</span> address = croupierSocket.address();
- console.log(<span class="hljs-string">"croupierSocket listening "</span> + address.address + <span class="hljs-string">":"</span> + address.port);
-}
-
-croupierSocket.on(<span class="hljs-string">"message"</span>, _croupierOnMessage)
-              .on(<span class="hljs-string">"listening"</span>, _croupierOnListening);
-
-croupierSocket.bind(<span class="hljs-number">3000</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
-  croupierSocket.addMembership(<span class="hljs-string">'224.0.0.14'</span>);
-});</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-7">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-7">&#182;</a>
-              </div>
-              <h2 id="_getaddress-topic-function">_getAddress(topic) function</h2>
-
-            </div>
+ debug(<span class="hljs-string">"croupierSocket listening "</span> + address.address + <span class="hljs-string">":"</span> + address.port);
+}</pre></div></div>
             
         </li>
         
@@ -190,6 +190,19 @@ croupierSocket.bind(<span class="hljs-number">3000</span>, <span class="hljs-fun
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <h2 id="_getaddress-topic-function">_getAddress(topic) function</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <p>Pick a random server for the topic and returns an address object:
     {host: host, port: port}</p>
@@ -201,35 +214,22 @@ croupierSocket.bind(<span class="hljs-number">3000</span>, <span class="hljs-fun
   <span class="hljs-keyword">var</span> res;
   <span class="hljs-keyword">var</span> address = <span class="hljs-literal">null</span>;
   <span class="hljs-keyword">var</span> count = <span class="hljs-number">0</span>;
-  <span class="hljs-keyword">if</span>(servers[topic]){
+  <span class="hljs-keyword">if</span> (servers[topic]){
     <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> server_info <span class="hljs-keyword">in</span> servers[topic])
-        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">Math</span>.random() &lt; <span class="hljs-number">1</span>/++count){
+        count += <span class="hljs-number">1</span>;
+        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">Math</span>.random() &lt; <span class="hljs-number">1</span>/count){
            res = servers[topic][server_info];
-       }
-    <span class="hljs-keyword">if</span>(res &amp;&amp; res.host &amp;&amp; res.port){
+        }
+    <span class="hljs-keyword">if</span> (res &amp;&amp; res.host &amp;&amp; res.port){
       address = {host: res.host, port: res.port};
     } <span class="hljs-keyword">else</span> {
-      console.log(<span class="hljs-string">"}} res: "</span>, res);
-      console.log(<span class="hljs-string">'}} WARN bad server... returning default'</span>, address)
+      console.log(<span class="hljs-string">'&gt;&gt; bad server... returning default'</span>, address)
     }
   } <span class="hljs-keyword">else</span> {
-    console.warn(<span class="hljs-string">"Not found servers for topic: "</span>, topic);
+    console.log(<span class="hljs-string">"&gt;&gt; Not found servers for topic: "</span>, topic);
   }
   <span class="hljs-keyword">return</span> address;
 }</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-9">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-9">&#182;</a>
-              </div>
-              <h2 id="servers">Servers</h2>
-
-            </div>
             
         </li>
         
@@ -239,6 +239,19 @@ croupierSocket.bind(<span class="hljs-number">3000</span>, <span class="hljs-fun
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <h2 id="servers">Servers</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
               <p>servers object stores the servers addresses and status by topic:</p>
 <pre><code class="lang-javascript">   {
@@ -255,39 +268,60 @@ croupierSocket.bind(<span class="hljs-number">3000</span>, <span class="hljs-fun
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> servers = {};
 <span class="hljs-keyword">var</span> index = <span class="hljs-number">0</span>;
-
 <span class="hljs-keyword">var</span> proxy = httpProxy.createProxyServer({});
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_returnHTTPError</span><span class="hljs-params">(res, code, reason)</span>{</span>
   res.writeHead(<span class="hljs-number">503</span>, reason, {<span class="hljs-string">'Content-Type'</span>: <span class="hljs-string">'application/json'</span>});
-  res.end(<span class="hljs-string">'{"result": "error", "status": '</span>+code+<span class="hljs-string">', "reason": "'</span>+reason+<span class="hljs-string">'"}'</span>);
+  res.end(<span class="hljs-string">'{"result": "error", "status": '</span> + code + <span class="hljs-string">', "reason": "'</span> + reason + <span class="hljs-string">'"}'</span>);
 }
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_processHTTPRequest</span><span class="hljs-params">(req, res)</span> {</span>
-  topic = req.headers[<span class="hljs-string">'croupier-topic'</span>];
-  <span class="hljs-keyword">if</span>(topic){
-    address = _getAddress(topic);
-    <span class="hljs-keyword">if</span>(address !== <span class="hljs-literal">null</span>){
+  <span class="hljs-keyword">var</span> topic = req.headers[<span class="hljs-string">'croupier-topic'</span>];
+  <span class="hljs-keyword">if</span> (topic){
+    <span class="hljs-keyword">var</span> address = _getAddress(topic);
+    <span class="hljs-keyword">if</span> (address !== <span class="hljs-literal">null</span>){
       console.log(<span class="hljs-string">"* received req with topic: "</span>, topic, <span class="hljs-string">"==&gt;&gt;"</span>, address);
       
       proxy.web(req, res, { target: address},
         <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">onProxyError</span><span class="hljs-params">(e, req, res)</span>{</span>
-          servicePort = address.host+<span class="hljs-string">":"</span>+address.port;
+          <span class="hljs-keyword">var</span> servicePort = address.host+<span class="hljs-string">":"</span>+address.port;
           <span class="hljs-keyword">delete</span> servers[topic][servicePort];
           console.log(<span class="hljs-string">"### error"</span>, e, <span class="hljs-string">" targeting: "</span>, address, <span class="hljs-string">" deleted servicePort: "</span>, servicePort, <span class="hljs-string">"for topic '"</span>, topic, <span class="hljs-string">"'from servers."</span>);
           _processHTTPRequest(req, res);
         });
     } <span class="hljs-keyword">else</span>{<span class="hljs-comment">//No server available for the topic</span>
-      _returnHTTPError(res, <span class="hljs-number">503</span>, <span class="hljs-string">'croupier-topic: "'</span>+ topic +<span class="hljs-string">'" has no servers available.'</span>);
+      _returnHTTPError(res, <span class="hljs-number">503</span>, <span class="hljs-string">'croupier-topic: "'</span> + topic + <span class="hljs-string">'" has no servers available.'</span>);
     }
   } <span class="hljs-keyword">else</span> {
     _returnHTTPError(res, <span class="hljs-number">400</span>, <span class="hljs-string">'croupier-topic header is not present.'</span>);
   }
 }
 
-<span class="hljs-keyword">var</span> httpServer = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http'</span>).createServer(_processHTTPRequest);
-httpServer.listen(<span class="hljs-number">8000</span>);
-console.log(<span class="hljs-string">"listening on port 8000"</span>);</pre></div></div>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_initCroupierDiscoverySocket</span><span class="hljs-params">()</span>{</span>
+  croupierSocket.on(<span class="hljs-string">"message"</span>, _croupierOnMessage)
+                .on(<span class="hljs-string">"listening"</span>, _croupierOnListening);
+
+  croupierSocket.bind(<span class="hljs-number">3000</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+    croupierSocket.addMembership(<span class="hljs-string">'224.0.0.14'</span>);
+    console.log(<span class="hljs-string">"Initialized croupier discovery socket on port 3000 and UDP-multicast group 224.0.0.14"</span>);
+  });
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_initCroupierHTTPServer</span><span class="hljs-params">()</span>{</span>
+  console.log(<span class="hljs-string">"Listening on port "</span>, port);
+  <span class="hljs-keyword">var</span> httpServer = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http'</span>).createServer(_processHTTPRequest);
+  httpServer.listen(port);
+  
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">main</span><span class="hljs-params">(argv)</span>{</span>
+  console.log(argv)
+  _processArguments(argv);
+  _initCroupierDiscoverySocket();
+  _initCroupierHTTPServer();
+}
+
+main(process.argv.slice(<span class="hljs-number">2</span>));</pre></div></div>
             
         </li>
         
