@@ -24,6 +24,34 @@ cd croupier
 npm install
 ```
 
+how to use
+----------
+Check sample files for a server and client code.
+
+**Server side** just include croupier-provider, start the croupier provider, and close it when done.
+
+```javascript
+var croupierProvider = require('./croupier-provider');
+var croupier = croupierProvider.startCroupier(topic, host, port);
+(...)
+croupier.finishedRequest(); //when handling requests, we can call finishedRequest so that croupier accounts how many requests we handled.
+(...)
+croupier.close(); // close when done serving HTTP.
+```
+
+**Client side** just add croupier-topic to your HTTP request headers.
+```javascript
+{
+    method: 'GET',
+    path: 'myrequest/path',
+    headers: {'croupier-topic': 'allocate-vm'},
+    host: 'croupier-host',
+    port: 8000
+}
+```
+
+Run croupier daemon so that requests go from your client(s) to your server(s). See below how to run it.
+
 running the example
 -------------------
 ```bash
