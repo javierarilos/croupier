@@ -21,14 +21,19 @@ var http = require('http'),
 // __node croupier.js [host] [port]__  
 // __host__ : Server to use, 0.0.0.0 by default.  
 // __port__ : Port to use for HTTP requests, 8000 by default.  
-// 
-if (process.argv[2] === '-h'){
-  console.log('Usage: node croupier.js [host] [port]');
-  console.log('host : Server to use, 0.0.0.0 by default.');
-  console.log('port : Port to use for HTTP requests, 8000 by default.');
+//
+var host = null;
+var port = null;
+
+function _processArguments(argv){
+  if (argv[0] === '-h'){
+    console.log('Usage: node croupier.js [host] [port]');
+    console.log('host : Server to use, 0.0.0.0 by default.');
+    console.log('port : Port to use for HTTP requests, 8000 by default.');
+  }
+  host = argv[0] || '0.0.0.0';
+  port = argv[1] || '8000';
 }
-var host = process.argv[2] || '0.0.0.0';
-var port = process.argv[3] || '8000';
 
 // Discovery
 // ---------
@@ -57,13 +62,6 @@ function _croupierOnListening () {
  debug("croupierSocket listening " + address.address + ":" + address.port);
 }
 
-croupierSocket.on("message", _croupierOnMessage)
-              .on("listening", _croupierOnListening);
-
-croupierSocket.bind(3000, function() {
-  croupierSocket.addMembership('224.0.0.14');
-});
-
 // _getAddress(topic) function
 // ---------------------------
 // Pick a random server for the topic and returns an address object:
@@ -75,9 +73,10 @@ function _getAddress(topic){
   var count = 0;
   if (servers[topic]){
     for (var server_info in servers[topic])
-        if (Math.random() < 1/++count){
+        count += 1;
+        if (Math.random() < 1/count){
            res = servers[topic][server_info];
-       }
+        }
     if (res && res.host && res.port){
       address = {host: res.host, port: res.port};
     } else {
@@ -103,12 +102,11 @@ function _getAddress(topic){
 //    }```
 var servers = {};
 var index = 0;
-
 var proxy = httpProxy.createProxyServer({});
 
 function _returnHTTPError(res, code, reason){
   res.writeHead(503, reason, {'Content-Type': 'application/json'});
-  res.end('{"result": "error", "status": '+code+', "reason": "'+reason+'"}');
+  res.end('{"result": "error", "status": ' + code + ', "reason": "' + reason + '"}');
 }
 
 function _processHTTPRequest(req, res) {
@@ -126,13 +124,35 @@ function _processHTTPRequest(req, res) {
           _processHTTPRequest(req, res);
         });
     } else{//No server available for the topic
-      _returnHTTPError(res, 503, 'croupier-topic: "'+ topic +'" has no servers available.');
+      _returnHTTPError(res, 503, 'croupier-topic: "' + topic + '" has no servers available.');
     }
   } else {
     _returnHTTPError(res, 400, 'croupier-topic header is not present.');
   }
 }
 
-var httpServer = require('http').createServer(_processHTTPRequest);
-httpServer.listen(8000);
-console.log("listening on port 8000");
+function _initCroupierDiscoverySocket(){
+  croupierSocket.on("message", _croupierOnMessage)
+                .on("listening", _croupierOnListening);
+
+  croupierSocket.bind(3000, function() {
+    croupierSocket.addMembership('224.0.0.14');
+    console.log("Initialized croupier discovery socket on port 3000 and UDP-multicast group 224.0.0.14");
+  });
+}
+
+function _initCroupierHTTPServer(){
+  console.log("Listening on port ", port);
+  var httpServer = require('http').createServer(_processHTTPRequest);
+  httpServer.listen(port);
+  
+}
+
+function main(argv){
+  console.log(argv)
+  _processArguments(argv);
+  _initCroupierDiscoverySocket();
+  _initCroupierHTTPServer();
+}
+
+main(process.argv.slice(2));
