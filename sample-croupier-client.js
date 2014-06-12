@@ -33,7 +33,8 @@ var callback = function(response) {
 var i = 0;
 
 setInterval(function(){
-  options.path = basePath + i++;
+  i += 1;
+  options.path = basePath + i;
   console.log(">> about to request : ", options)
   var req = http.request(options, callback);
   req.end();

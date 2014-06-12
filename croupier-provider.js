@@ -9,11 +9,6 @@ var requests = 0;
 var host = null;
 var port = null;
 
-function processedRequest(){
-  requests++;
-}
-
-//TODO: move to private scope
 var croupierSenderSocket = dgram.createSocket('udp4');
 
 function _croupierMulticast(msg){
