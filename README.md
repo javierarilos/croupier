@@ -2,6 +2,7 @@ croupier
 ========
 
 Croupier.JS: an HTTP Brokerless Bus
+Inspired by zeromq **Freelance Pattern** http://zguide.zeromq.org/page:all#header-109
 Croupier is a small daemon (or client library, TBD) that easily adds fault-tolerance, horizontal scalability to your current HTTP backend-to-backend interactions.
 
 When to use croupier
